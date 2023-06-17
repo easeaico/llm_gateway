@@ -21,5 +21,5 @@
 go.work
 
 .DS_Store
-llm-mesh
+llm_mesh
 conf/conf.yaml

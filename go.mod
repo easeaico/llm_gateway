@@ -1,4 +1,4 @@
-module github.com/yelcat/llm-mesh
+module github.com/easeaico/llm_mesh
 
 go 1.20
 

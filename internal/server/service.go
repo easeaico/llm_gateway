@@ -5,8 +5,8 @@ import (
 	"io"
 	"log"
 
+	"github.com/easeaico/llm_mesh/pkg/llm_mesh"
 	openai "github.com/sashabaranov/go-openai"
-	"github.com/yelcat/llm-mesh/pkg/llm_mesh"
 )
 
 type chatCompletionServer struct {

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/yelcat/llm-mesh";
+option go_package = "github.com/easeaico/llm_mesh";
 
 package llm_mesh;
 

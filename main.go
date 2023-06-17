@@ -5,8 +5,8 @@ import (
 	"log"
 	"net"
 
-	"github.com/yelcat/llm-mesh/internal/server"
-	"github.com/yelcat/llm-mesh/pkg/llm_mesh"
+	"github.com/easeaico/llm_mesh/internal/server"
+	"github.com/easeaico/llm_mesh/pkg/llm_mesh"
 	"google.golang.org/grpc"
 )
 

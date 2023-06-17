@@ -5,5 +5,5 @@ WORKDIR /app
 COPY . .
 RUN go build .
 
-EXPOSE 4000
-ENTRYPOINT ["./llmmesh"]
+EXPOSE 5984
+ENTRYPOINT ["./llm_mesh"]

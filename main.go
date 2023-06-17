@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	port = 1984
+	port = 5984
 )
 
 func main() {

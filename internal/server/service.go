@@ -7,6 +7,8 @@ import (
 
 	"github.com/easeaico/llm_mesh/pkg/llm_mesh"
 	openai "github.com/sashabaranov/go-openai"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type chatCompletionServer struct {
@@ -53,25 +55,25 @@ func (s chatCompletionServer) ChatCompletion(req *llm_mesh.ChatCompletionRequest
 	oStream, err := client.CreateChatCompletionStream(ctx, oReq)
 	if err != nil {
 		log.Printf("ChatCompletionStream error: %v\n", err)
-		return err
+		return status.Errorf(codes.Internal, "ChatCompletionStream error: %v", err)
 	}
 
 	for {
 		resp, err := oStream.Recv()
 		if err == io.EOF {
-			return err
+			return nil
 		}
 
 		e := &openai.APIError{}
 		if errors.As(err, &e) && e.HTTPStatusCode == 429 {
 			clientPool.MarkRateLimit(client)
 			log.Printf("Stream error: %v", err)
-			return err
+			return status.Errorf(codes.ResourceExhausted, "Stream error: %v", err)
 		}
 
 		if err != nil {
 			log.Printf("Stream error: %v", err)
-			return err
+			return status.Errorf(codes.Internal, "Stream error: %v", err)
 		}
 
 		var choices []*llm_mesh.ChatCompletionStreamChoice
@@ -101,7 +103,7 @@ func (s chatCompletionServer) ChatCompletion(req *llm_mesh.ChatCompletionRequest
 
 		if err := stream.Send(reply); err != nil {
 			log.Printf("Stream error: %v", err)
-			return err
+			return status.Errorf(codes.Internal, "Stream error: %v", err)
 		}
 	}
 }

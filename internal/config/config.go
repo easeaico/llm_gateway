@@ -1,4 +1,4 @@
-package server
+package config
 
 import (
 	"io/ioutil"
@@ -7,14 +7,20 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var (
-	config Config = ReadConfigFile("./conf/conf.yaml")
-)
+type OpenAI struct {
+	Token string `yaml:"token"`
+}
+
+type Azure struct {
+	Key          string            `yaml:"key"`
+	Endpoint     string            `yaml:"endpoint"`
+	ModelMapping map[string]string `yaml:"model_mappping"`
+}
 
 type Config struct {
-	OpenAI struct {
-		Tokens []string `yaml:"tokens"`
-	} `yaml:"openai"`
+	Mode   string `yaml:"mode"`
+	OpenAI OpenAI `yaml:"openai"`
+	Azure  Azure  `yaml:"azure"`
 }
 
 func ReadConfigFile(path string) Config {

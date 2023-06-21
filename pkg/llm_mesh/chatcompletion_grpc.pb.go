@@ -53,7 +53,7 @@ func (c *chatCompletionServiceClient) ChatCompletion(ctx context.Context, in *Ch
 }
 
 type ChatCompletionService_ChatCompletionClient interface {
-	Recv() (*ChatCompletionResponse, error)
+	Recv() (*ChatCompletionStreamResponse, error)
 	grpc.ClientStream
 }
 
@@ -61,8 +61,8 @@ type chatCompletionServiceChatCompletionClient struct {
 	grpc.ClientStream
 }
 
-func (x *chatCompletionServiceChatCompletionClient) Recv() (*ChatCompletionResponse, error) {
-	m := new(ChatCompletionResponse)
+func (x *chatCompletionServiceChatCompletionClient) Recv() (*ChatCompletionStreamResponse, error) {
+	m := new(ChatCompletionStreamResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -106,7 +106,7 @@ func _ChatCompletionService_ChatCompletion_Handler(srv interface{}, stream grpc.
 }
 
 type ChatCompletionService_ChatCompletionServer interface {
-	Send(*ChatCompletionResponse) error
+	Send(*ChatCompletionStreamResponse) error
 	grpc.ServerStream
 }
 
@@ -114,7 +114,7 @@ type chatCompletionServiceChatCompletionServer struct {
 	grpc.ServerStream
 }
 
-func (x *chatCompletionServiceChatCompletionServer) Send(m *ChatCompletionResponse) error {
+func (x *chatCompletionServiceChatCompletionServer) Send(m *ChatCompletionStreamResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 

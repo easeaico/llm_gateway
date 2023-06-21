@@ -12,9 +12,9 @@ type OpenAI struct {
 }
 
 type Azure struct {
-	Key          string            `yaml:"key"`
-	Endpoint     string            `yaml:"endpoint"`
-	ModelMapping map[string]string `yaml:"model_mappping"`
+	Key      string            `yaml:"key"`
+	Endpoint string            `yaml:"endpoint"`
+	Models   map[string]string `yaml:"models"`
 }
 
 type Config struct {

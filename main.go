@@ -11,19 +11,16 @@ import (
 	"google.golang.org/grpc"
 )
 
-const (
-	port = 5984
-)
-
 func main() {
 	conf := config.ReadConfigFile("./conf/config.yaml")
-	lis, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", port))
+	svrconf := conf.Server
+	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%d", svrconf.IP, svrconf.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	log.Printf("listening success: %d\n", port)
+	log.Printf("listening success: %s:%d\n", svrconf.IP, svrconf.Port)
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
-	llm_mesh.RegisterChatCompletionServiceServer(grpcServer, server.NewChatCompletionServer(conf))
+	llm_mesh.RegisterChatCompletionServiceServer(grpcServer, server.NewChatCompletionServer(&conf))
 	grpcServer.Serve(lis)
 }

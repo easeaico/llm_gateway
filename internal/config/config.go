@@ -12,15 +12,26 @@ type OpenAI struct {
 }
 
 type Azure struct {
-	Key      string            `yaml:"key"`
-	Endpoint string            `yaml:"endpoint"`
-	Models   map[string]string `yaml:"models"`
+	Key          string            `yaml:"key"`
+	Endpoint     string            `yaml:"endpoint"`
+	ModelMapping map[string]string `yaml:"model-mapping"`
+}
+
+type Mix struct {
+	Pipe []string `yaml:"pipe"`
+}
+
+type Server struct {
+	IP   string `yaml:"ip"`
+	Port int    `yaml:"port"`
 }
 
 type Config struct {
 	Mode   string `yaml:"mode"`
+	Server Server `yaml:"server"`
 	OpenAI OpenAI `yaml:"openai"`
 	Azure  Azure  `yaml:"azure"`
+	Mix    Mix    `yaml:"mix"`
 }
 
 func ReadConfigFile(path string) Config {

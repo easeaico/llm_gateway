@@ -14,25 +14,12 @@ import (
 
 type chatCompletionServer struct {
 	llm_mesh.UnimplementedChatCompletionServiceServer
-
-	client *openai.Client
+	clients *Clients
 }
 
-func NewChatCompletionServer(conf config.Config) llm_mesh.ChatCompletionServiceServer {
-	var client *openai.Client
-	if conf.Mode == "openai" {
-		client = openai.NewClient(conf.OpenAI.Token)
-	} else if conf.Mode == "azure" {
-		cfg := openai.DefaultAzureConfig(conf.Azure.Key, conf.Azure.Endpoint)
-		cfg.APIVersion = "2023-03-15-preview"
-		cfg.AzureModelMapperFunc = func(model string) string {
-			return conf.Azure.Models[model]
-		}
-		client = openai.NewClientWithConfig(cfg)
-	}
-
+func NewChatCompletionServer(conf *config.Config) llm_mesh.ChatCompletionServiceServer {
 	return &chatCompletionServer{
-		client: client,
+		clients: NewClients(conf),
 	}
 }
 
@@ -67,7 +54,8 @@ func (s *chatCompletionServer) ChatCompletion(req *llm_mesh.ChatCompletionReques
 	}
 
 	ctx := stream.Context()
-	oStream, err := s.client.CreateChatCompletionStream(ctx, oReq)
+	client := s.clients.GetAvailableClient()
+	oStream, err := client.CreateChatCompletionStream(ctx, oReq)
 	if err != nil {
 		log.Printf("ChatCompletionStream error: %v\n", err)
 		return status.Errorf(codes.Internal, "ChatCompletionStream error: %v", err)
@@ -89,6 +77,7 @@ func (s *chatCompletionServer) ChatCompletion(req *llm_mesh.ChatCompletionReques
 			case 429:
 				// rate limiting or engine overload (wait and retry)
 				log.Printf("Stream error: %v", err)
+				s.clients.MarkCurrentRateLimit()
 				return status.Errorf(codes.ResourceExhausted, "Stream error: %v", err)
 			case 500:
 				// openai server error (retry)

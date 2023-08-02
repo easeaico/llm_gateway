@@ -1,0 +1,15 @@
+mode: mix
+server:
+  ip: "0.0.0.0"
+  port: 5984
+mix:
+  pipe:
+    - openai
+    - azure
+openai:
+  token: "sk-xxxxxx"
+azure:
+  key: "xxxxxxx"
+  endpoint: "https://xxx.openai.azure.com/"
+  model-mapping:
+    gpt-3.5-turbo: gpt35

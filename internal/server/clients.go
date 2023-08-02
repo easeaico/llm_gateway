@@ -75,7 +75,7 @@ func (c *Clients) resetAvailable() {
 				st := atomic.LoadInt64(&c.status[i])
 				// rate limtting of minute
 				if st > 0 && now-st >= 60 {
-					atomic.CompareAndSwapInt64(&c.status[i], st, 0)
+					atomic.StoreInt64(&c.status[i], 0)
 				}
 			}
 
@@ -95,9 +95,9 @@ func (c *Clients) MarkCurrentRateLimit() {
 	n := atomic.LoadInt64(&c.current)
 	i := n % c.total
 	ts := time.Now().Unix()
-	if atomic.CompareAndSwapInt64(&c.status[i], 0, ts) {
-		atomic.AddInt64(&c.current, 1)
-	}
+	atomic.StoreInt64(&c.status[i], ts)
+	cur := atomic.AddInt64(&c.current, 1)
+	log.Printf("current client index is %d", cur)
 }
 
 func (c *Clients) GetAvailableClient() *openai.Client {
@@ -109,13 +109,6 @@ func (c *Clients) GetAvailableClient() *openai.Client {
 	case "mix":
 		n := atomic.LoadInt64(&c.current)
 		i := n % c.total
-		st := atomic.LoadInt64(&c.status[i])
-		if st == 0 {
-			return c.clients[i]
-		}
-
-		n = atomic.AddInt64(&c.current, 1)
-		i = n % c.total
 		return c.clients[i]
 	default:
 		log.Panic(fmt.Sprintf("unknown mode: %s", c.mode))

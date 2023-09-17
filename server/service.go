@@ -5,7 +5,6 @@ import (
 	"io"
 	"log"
 
-	"github.com/easeaico/llm_mesh/internal/config"
 	"github.com/easeaico/llm_mesh/pkg/llm_mesh"
 	openai "github.com/sashabaranov/go-openai"
 	"google.golang.org/grpc/codes"
@@ -17,7 +16,7 @@ type chatCompletionServer struct {
 	clients *Clients
 }
 
-func NewChatCompletionServer(conf *config.Config) llm_mesh.ChatCompletionServiceServer {
+func NewChatCompletionServer(conf *Config) llm_mesh.ChatCompletionServiceServer {
 	return &chatCompletionServer{
 		clients: NewClients(conf),
 	}
@@ -77,7 +76,6 @@ func (s *chatCompletionServer) ChatCompletion(req *llm_mesh.ChatCompletionReques
 			case 429:
 				// rate limiting or engine overload (wait and retry)
 				log.Printf("Stream error: %v", err)
-				s.clients.MarkCurrentRateLimit()
 				return status.Errorf(codes.ResourceExhausted, "Stream error: %v", err)
 			case 500:
 				// openai server error (retry)

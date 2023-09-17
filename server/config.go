@@ -1,7 +1,7 @@
-package config
+package server
 
 import (
-	"io/ioutil"
+	"os"
 	"log"
 
 	"gopkg.in/yaml.v2"
@@ -17,10 +17,6 @@ type Azure struct {
 	ModelMapping map[string]string `yaml:"model-mapping"`
 }
 
-type Mix struct {
-	Pipe []string `yaml:"pipe"`
-}
-
 type Server struct {
 	IP   string `yaml:"ip"`
 	Port int    `yaml:"port"`
@@ -31,13 +27,12 @@ type Config struct {
 	Server Server `yaml:"server"`
 	OpenAI OpenAI `yaml:"openai"`
 	Azure  Azure  `yaml:"azure"`
-	Mix    Mix    `yaml:"mix"`
 }
 
-func ReadConfigFile(path string) Config {
+func NewConfig(path string) Config {
 	var config Config
 
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		log.Fatalf("Error reading YAML file: %s", err)
 	}

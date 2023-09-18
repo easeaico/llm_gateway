@@ -3,6 +3,8 @@
 # Build the application from source
 FROM golang:latest AS build-stage
 
+ENV GOPROXY https://goproxy.cn,direct
+
 WORKDIR /app
 
 COPY go.mod go.sum ./

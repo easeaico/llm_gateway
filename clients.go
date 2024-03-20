@@ -1,18 +1,17 @@
-package server
+package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/sashabaranov/go-openai"
 )
 
 type Clients struct {
-	clients []*openai.Client
 	mode    string
+	clients []*openai.Client
+	status  []int64
 	total   int64
 	current int64
-	status  []int64
 }
 
 func NewClients(conf *Config) *Clients {
@@ -46,7 +45,7 @@ func createClientByMode(mode string, conf *Config) *openai.Client {
 		client := openai.NewClientWithConfig(cfg)
 		return client
 	default:
-		log.Panic(fmt.Sprintf("unknown mode: %s", mode))
+		log.Panicf("unknown mode: %s", mode)
 	}
 
 	return nil
@@ -59,7 +58,7 @@ func (c *Clients) GetAvailableClient() *openai.Client {
 	case "azure":
 		return c.clients[0]
 	default:
-		log.Panic(fmt.Sprintf("unknown mode: %s", c.mode))
+		log.Panicf("unknown mode: %s", c.mode)
 	}
 
 	return nil

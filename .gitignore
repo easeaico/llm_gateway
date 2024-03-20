@@ -22,5 +22,5 @@ go.work
 
 .DS_Store
 llm_mesh
-conf/config.yaml
-llm-mesh.tar
+config.yaml
+llm_gateway.tar

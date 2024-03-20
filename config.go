@@ -1,8 +1,8 @@
-package server
+package main
 
 import (
-	"os"
 	"log"
+	"os"
 
 	"gopkg.in/yaml.v2"
 )
@@ -12,9 +12,9 @@ type OpenAI struct {
 }
 
 type Azure struct {
+	ModelMapping map[string]string `yaml:"model-mapping"`
 	Key          string            `yaml:"key"`
 	Endpoint     string            `yaml:"endpoint"`
-	ModelMapping map[string]string `yaml:"model-mapping"`
 }
 
 type Server struct {
@@ -23,10 +23,10 @@ type Server struct {
 }
 
 type Config struct {
-	Mode   string `yaml:"mode"`
-	Server Server `yaml:"server"`
-	OpenAI OpenAI `yaml:"openai"`
 	Azure  Azure  `yaml:"azure"`
+	Mode   string `yaml:"mode"`
+	OpenAI OpenAI `yaml:"openai"`
+	Server Server `yaml:"server"`
 }
 
 func NewConfig(path string) Config {

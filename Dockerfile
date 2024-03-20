@@ -5,28 +5,20 @@ FROM golang:latest AS build-stage
 
 ENV GOPROXY https://goproxy.cn,direct
 
-WORKDIR /app
+WORKDIR /build
 
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o /llm_mesh
-
-# Run the tests in the container
-FROM build-stage AS run-test-stage
-RUN go test -v ./...
+RUN CGO_ENABLED=0 GOOS=linux go build -o llm_gateway
 
 # Deploy the application binary into a lean image
 FROM gcr.io/distroless/base-debian11 AS build-release-stage
 
-WORKDIR /
-
-COPY --from=build-stage /llm_mesh /llm_mesh
-
-EXPOSE 5984
-
+WORKDIR /app
+COPY --from=build-stage /build/llm_gateway llm_gateway
+EXPOSE 8055
 USER nonroot:nonroot
-
-ENTRYPOINT ["/llm_mesh", "-f", "/conf/config.yaml"]
+ENTRYPOINT ["/app/llm_gateway", "-f", "/conf/config.yaml"]
